@@ -96,4 +96,20 @@ public class LoginViewModel extends ViewModel {
         super.onCleared();
         compositeDisposable.dispose();
     }
+
+    public String getUserPassword() {
+        return sharedPreferenceModel.getString(Constants.PREF_USER_PASSWORD, "null");
+    }
+
+    public String getUserEmail() {
+        return sharedPreferenceModel.getString(Constants.PREF_USER_EMAIL, "null");
+    }
+
+    public void setUserEmail(String key, String value) {
+        sharedPreferenceModel.saveString(key, value);
+    }
+
+    public void setUserPassword(String key, String value) {
+        sharedPreferenceModel.saveString(key, value);
+    }
 }

@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
                 String token = loginResponse.getAccessToken();
                 authHolder.login(token);
                 authHolder.saveEmail(login.getEmail());
-
+                authHolder.saveUserPassword(login.getPassword());
                 return isPreviousUser();
             })
             .flatMapCompletable(isPrevious -> {

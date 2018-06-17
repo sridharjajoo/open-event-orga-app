@@ -265,6 +265,12 @@
     <string name="privacy">Privacy</string>
     <string name="hash">Hash</string>
     <string name="other_url">Other URL</string>
+    <string-array name="stepLabels">
+        <item>Step 1</item>
+        <item>Step 2</item>
+        <item>Step 3</item>
+        <item>Step 4</item>
+    </string-array>
 
     <string-array name="timezones">
         <item>Africa/Abidjan</item>

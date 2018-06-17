@@ -90,16 +90,16 @@ public class CreateEventFragment extends BaseBottomSheetFragment<CreateEventPres
             isUpdateEvent = eventId != -1;
         }
 
-        AppCompatActivity activity = ((AppCompatActivity) getActivity());
-        activity.setSupportActionBar(binding.toolbar);
-
-        ActionBar actionBar = activity.getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
-        setHasOptionsMenu(true);
+//        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+//        activity.setSupportActionBar(binding.toolbar);
+//
+//        ActionBar actionBar = activity.getSupportActionBar();
+//        if (actionBar != null) {
+//            actionBar.setHomeButtonEnabled(true);
+//            actionBar.setDisplayHomeAsUpEnabled(true);
+//        }
+//
+//        setHasOptionsMenu(true);
 
         binding.submit.setOnClickListener(view -> {
             if (validator.validate()) {
@@ -154,7 +154,7 @@ public class CreateEventFragment extends BaseBottomSheetFragment<CreateEventPres
             binding.form.createEventTitle.setText(getResources().getString(R.string.update_event));
             getPresenter().loadEvents(eventId);
         } else {
-            binding.form.createEventTitle.setText(getResources().getString(R.string.create_event));
+//            binding.form.createEventTitle.setText(getResources().getString(R.string.create_event));
         }
 
     }

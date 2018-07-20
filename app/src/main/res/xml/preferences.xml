@@ -25,6 +25,11 @@
             android:title="@string/rate_us"
             android:selectable="true"
             android:summary="Love us? Rate us on Google Play." />
+
+        <Preference
+            android:key="acknowledgement"
+            android:title="@string/acknowledgements"
+            android:selectable="true" />
     </PreferenceCategory>
 
 </android.support.v7.preference.PreferenceScreen>

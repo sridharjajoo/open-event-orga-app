@@ -29,7 +29,6 @@ public class OrdersViewModel extends ViewModel {
     @Inject
     public OrdersViewModel(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        progress.setValue(false);
     }
 
     public LiveData<List<Order>> getOrders(long id, boolean reload) {

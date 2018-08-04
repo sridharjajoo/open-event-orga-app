@@ -1,5 +1,7 @@
 package com.eventyay.organizer.core.ticket.list;
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.eventyay.organizer.core.orders.list.OrdersViewModel;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 
 import com.eventyay.organizer.R;
@@ -32,7 +35,7 @@ import javax.inject.Inject;
 
 import dagger.Lazy;
 
-public class TicketsFragment extends BaseFragment<TicketsPresenter> implements TicketsView {
+public class TicketsFragment extends BaseFragment implements TicketsView {
 
     private Context context;
     private long eventId;
@@ -41,12 +44,13 @@ public class TicketsFragment extends BaseFragment<TicketsPresenter> implements T
     ContextUtils utilModel;
 
     @Inject
-    Lazy<TicketsPresenter> ticketsPresenter;
+    ViewModelProvider.Factory viewModelFactory;
 
     private TicketsAdapter ticketsAdapter;
     private RecyclerView.AdapterDataObserver adapterDataObserver;
     private TicketsFragmentBinding binding;
     private SwipeRefreshLayout refreshLayout;
+    private TicketsViewModel ticketsViewModel;
 
     public static TicketsFragment newInstance(long eventId) {
         TicketsFragment fragment = new TicketsFragment();
@@ -70,7 +74,7 @@ public class TicketsFragment extends BaseFragment<TicketsPresenter> implements T
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.tickets_fragment, container, false);
         binding.createTicketFab.setOnClickListener(view -> {
-            openCreateTicketFragment();
+//            openCreateTicketFragment();
        });
         return binding.getRoot();
     }
@@ -78,10 +82,16 @@ public class TicketsFragment extends BaseFragment<TicketsPresenter> implements T
     @Override
     public void onStart() {
         super.onStart();
+
         setupRecyclerView();
         setupRefreshListener();
-        getPresenter().attach(eventId, this);
-        getPresenter().start();
+        ticketsViewModel = ViewModelProviders.of(this, viewModelFactory).get(TicketsViewModel.class);
+        ticketsViewModel.getTicket().observe(this, this::openCreateTicketFragment);
+        loadTickets();
+    }
+
+    private void loadTickets() {
+        ticketsViewModel.getTickets().observe(this, this::showResults);
     }
 
     @Override
@@ -96,7 +106,7 @@ public class TicketsFragment extends BaseFragment<TicketsPresenter> implements T
         ticketsAdapter.unregisterAdapterDataObserver(adapterDataObserver);
     }
 
-    public void openCreateTicketFragment() {
+    public void openCreateTicketFragment(Ticket ticket) {
         getFragmentManager().beginTransaction()
             .replace(R.id.fragment_container, CreateTicketFragment.newInstance())
             .addToBackStack(null)
@@ -104,7 +114,7 @@ public class TicketsFragment extends BaseFragment<TicketsPresenter> implements T
     }
 
     private void setupRecyclerView() {
-        ticketsAdapter = new TicketsAdapter(getPresenter());
+        ticketsAdapter = new TicketsAdapter(ticketsViewModel);
 
         RecyclerView recyclerView = binding.ticketsRecyclerView;
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -131,13 +141,8 @@ public class TicketsFragment extends BaseFragment<TicketsPresenter> implements T
         refreshLayout.setColorSchemeColors(utilModel.getResourceColor(R.color.color_accent));
         refreshLayout.setOnRefreshListener(() -> {
             refreshLayout.setRefreshing(false);
-            getPresenter().loadTickets(true);
+            ticketsViewModel.loadTickets(true);
         });
-    }
-
-    @Override
-    public Lazy<TicketsPresenter> getPresenterProvider() {
-        return ticketsPresenter;
     }
 
     @Override
@@ -157,8 +162,14 @@ public class TicketsFragment extends BaseFragment<TicketsPresenter> implements T
     }
 
     @Override
-    public void showResults(List<Ticket> items) {
-        ticketsAdapter.notifyDataSetChanged();
+    public void showResults(List<Ticket> tickets) {
+        if (tickets.isEmpty()) {
+            showEmptyView(true);
+            return;
+        }
+
+        showEmptyView(false);
+        ticketsAdapter.setTickets(tickets);
     }
 
     @Override
